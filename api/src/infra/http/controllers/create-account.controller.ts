@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common'
 import { z } from 'zod'
+import { Public } from 'src/infra/auth/public'
 import { RegisterUserUseCase } from 'src/domain/use-cases/register-user'
 import { ZodValidationPipe } from '../pipes/zod-validation-pipe'
 
@@ -12,6 +13,7 @@ const createAccountBodySchema = z.object({
 type CreateAccountBodySchema = z.infer<typeof createAccountBodySchema>
 
 @Controller('/accounts')
+@Public()
 export class CreateAccountController {
   constructor(private readonly registerUser: RegisterUserUseCase) {}
 

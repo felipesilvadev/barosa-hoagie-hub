@@ -10,11 +10,9 @@ interface RegisterUserUseCaseRequest {
   password: string
 }
 
-type RegisterUserUseCaseResponse =
-  | ConflictException
-  | {
-      user: User
-    }
+type RegisterUserUseCaseResponse = {
+  user: User
+}
 
 @Injectable()
 export class RegisterUserUseCase {
