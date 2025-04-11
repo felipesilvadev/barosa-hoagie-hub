@@ -7,6 +7,9 @@ import { EnvService } from '../env/env.service'
 import { UsersRepository } from 'src/domain/repositories/users-repository'
 import { MongooseUsersRepository } from './mongoose/repositories/mongoose-users-repository'
 import { UserSchema } from './mongoose/schemas/user.schema'
+import { HoagiesRepository } from 'src/domain/repositories/hoagies-repository'
+import { MongooseHoagiesRepository } from './mongoose/repositories/mongoose-hoagies-repository'
+import { HoagieSchema } from './mongoose/schemas/hoagie.schema'
 
 @Module({
   imports: [
@@ -23,6 +26,10 @@ import { UserSchema } from './mongoose/schemas/user.schema'
         name: 'User',
         schema: UserSchema,
       },
+      {
+        name: 'Hoagie',
+        schema: HoagieSchema,
+      },
     ]),
   ],
   providers: [
@@ -30,7 +37,11 @@ import { UserSchema } from './mongoose/schemas/user.schema'
       provide: UsersRepository,
       useClass: MongooseUsersRepository,
     },
+    {
+      provide: HoagiesRepository,
+      useClass: MongooseHoagiesRepository,
+    },
   ],
-  exports: [UsersRepository],
+  exports: [UsersRepository, HoagiesRepository],
 })
 export class DatabaseModule {}

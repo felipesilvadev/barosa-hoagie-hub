@@ -16,7 +16,6 @@ export class UserMapper {
 
   static toMongoose(user: User) {
     return {
-      _id: user.id.toValue(),
       name: user.name,
       email: user.email,
       password: user.password,
