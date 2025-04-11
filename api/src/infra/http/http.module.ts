@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common'
+import { APP_GUARD } from '@nestjs/core'
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler'
 
 import { DatabaseModule } from '../database/database.module'
 import { CryptographyModule } from '../cryptography/cryptography.module'
@@ -20,7 +22,18 @@ import { GetHoagiesByUserUseCase } from 'src/domain/use-cases/get-hoagies-by-use
 import { CommentOnHoagieUseCase } from 'src/domain/use-cases/comment-on-hoagie'
 
 @Module({
-  imports: [DatabaseModule, CryptographyModule],
+  imports: [
+    ThrottlerModule.forRoot({
+      throttlers: [
+        {
+          ttl: 60000,
+          limit: 10,
+        },
+      ],
+    }),
+    DatabaseModule,
+    CryptographyModule,
+  ],
   controllers: [
     CreateAccountController,
     AuthenticateController,
@@ -31,6 +44,10 @@ import { CommentOnHoagieUseCase } from 'src/domain/use-cases/comment-on-hoagie'
     GetHoagieByIdController,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
     RegisterUserUseCase,
     AuthenticateUserUseCase,
     CreateHoagieUseCase,

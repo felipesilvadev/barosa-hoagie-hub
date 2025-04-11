@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, Post, UsePipes } from '@nestjs/common'
+import { Throttle } from '@nestjs/throttler'
 import { z } from 'zod'
 import { Public } from 'src/infra/auth/public'
 import { AuthenticateUserUseCase } from 'src/domain/use-cases/authenticate-user'
@@ -16,6 +17,7 @@ type AuthenticateBodySchema = z.infer<typeof authenticateBodySchema>
 export class AuthenticateController {
   constructor(private readonly authenticateUser: AuthenticateUserUseCase) {}
 
+  @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Post()
   @HttpCode(201)
   @UsePipes(new ZodValidationPipe(authenticateBodySchema))
