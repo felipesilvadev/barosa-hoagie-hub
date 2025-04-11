@@ -26,8 +26,10 @@ export class GetHoagieByIdController {
   ) {
     const { hoagieId } = param
 
-    const { hoagie, creatorName } = await this.getHoagie.execute({ hoagieId })
+    const { hoagie, creatorName, comments } = await this.getHoagie.execute({
+      hoagieId,
+    })
 
-    return { hoagie: HoagiePresenter.toHTTP(hoagie, creatorName) }
+    return { hoagie: HoagiePresenter.toHTTP(hoagie, { creatorName, comments }) }
   }
 }

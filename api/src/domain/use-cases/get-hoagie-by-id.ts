@@ -10,6 +10,15 @@ interface GetHoagieByIdUseCaseRequest {
 type GetHoagieByIdUseCaseResponse = {
   hoagie: Hoagie
   creatorName: string
+  comments: {
+    id: string
+    text: string
+    createdAt: Date
+    user: {
+      id: string
+      name: string
+    }
+  }[]
 }
 
 @Injectable()
@@ -25,6 +34,8 @@ export class GetHoagieByIdUseCase {
       throw new NotFoundException('Hoagie does not exists')
     }
 
-    return { hoagie: result.hoagie, creatorName: result.creatorName }
+    const { hoagie, creatorName, comments } = result
+
+    return { hoagie, creatorName, comments }
   }
 }

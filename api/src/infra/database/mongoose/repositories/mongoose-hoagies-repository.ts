@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model } from 'mongoose'
+import { Model, Types } from 'mongoose'
 
 import { Hoagie } from 'src/domain/entities/hoagie'
 import { HoagiesRepository } from 'src/domain/repositories/hoagies-repository'
@@ -22,16 +22,40 @@ export class MongooseHoagiesRepository implements HoagiesRepository {
 
     const [hoagieDocs, total] = await Promise.all([
       this.hoagieModel
-        .find()
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(perPage)
-        .select('-picture')
+        .aggregate([
+          { $sort: { createdAt: -1 } },
+          { $skip: skip },
+          { $limit: perPage },
+          {
+            $lookup: {
+              from: 'comments',
+              localField: '_id',
+              foreignField: 'hoagieId',
+              as: 'comments',
+            },
+          },
+          {
+            $addFields: {
+              commentCount: { $size: '$comments' },
+            },
+          },
+          {
+            $project: {
+              picture: 0,
+              comments: 0,
+            },
+          },
+        ])
         .exec(),
       this.hoagieModel.countDocuments().exec(),
     ])
 
-    const hoagies = hoagieDocs.map(HoagieMapper.toDomain)
+    const hoagies = hoagieDocs.map((hoagie) => {
+      return {
+        item: HoagieMapper.toDomain(hoagie),
+        commentCount: hoagie.commentCount as number,
+      }
+    })
 
     return { hoagies, total, perPage }
   }
@@ -44,39 +68,60 @@ export class MongooseHoagiesRepository implements HoagiesRepository {
 
     if (!hoagie) return null
 
-    if (hasPopulatedField(hoagie.creatorId, 'name')) {
-      const creatorName = hoagie.creatorId.name as string
+    const creatorName = hasPopulatedField(hoagie.creatorId, 'name')
+      ? (hoagie.creatorId.name as string)
+      : 'Unknown creator'
 
-      return {
-        hoagie: HoagieMapper.toDomain(hoagie),
-        creatorName,
-      }
-    }
+    const comments = await this.hoagieModel.db
+      .collection('comments')
+      .aggregate([
+        { $match: { hoagieId: new Types.ObjectId(id) } },
+        {
+          $lookup: {
+            from: 'users',
+            localField: 'userId',
+            foreignField: '_id',
+            as: 'user',
+          },
+        },
+        { $unwind: '$user' },
+        {
+          $project: {
+            _id: 1,
+            text: 1,
+            createdAt: 1,
+            user: {
+              _id: '$user._id',
+              name: '$user.name',
+            },
+          },
+        },
+      ])
+      .toArray()
 
     return {
       hoagie: HoagieMapper.toDomain(hoagie),
-      creatorName: 'Unknown creator',
+      creatorName,
+      comments: comments.map((comment) => ({
+        id: comment._id.toString(),
+        text: comment.text,
+        createdAt: comment.createdAt,
+        user: {
+          id: comment.user._id.toString(),
+          name: comment.user.name,
+        },
+      })),
     }
   }
 
   async findByUserId(userId: string): Promise<Hoagie[]> {
     const hoagies = await this.hoagieModel
-      .find({ creatorId: userId })
+      .find({ creatorId: new Types.ObjectId(userId) })
       .sort({ createdAt: -1 })
       .select('-picture')
       .exec()
 
     return hoagies.map(HoagieMapper.toDomain)
-  }
-
-  async save(hoagie: Hoagie): Promise<void> {
-    const data = HoagieMapper.toMongoose(hoagie)
-
-    await this.hoagieModel.updateOne(
-      { _id: hoagie.id.toValue },
-      { $set: data },
-      { upsert: false },
-    )
   }
 
   async create(hoagie: Hoagie): Promise<void> {

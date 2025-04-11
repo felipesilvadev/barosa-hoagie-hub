@@ -8,7 +8,10 @@ interface FetchHoagiesUseCaseRequest {
 }
 
 type FetchHoagiesUseCaseResponse = {
-  hoagies: Hoagie[]
+  hoagies: {
+    item: Hoagie
+    commentCount: number
+  }[]
   total: number
   perPage: number
 }

@@ -1,3 +1,5 @@
+import { Types } from 'mongoose'
+
 import { Hoagie } from 'src/domain/entities/hoagie'
 import { UniqueEntityID } from 'src/core/entities/unique-entity-id'
 import { HoagieDocument } from '../schemas/hoagie.schema'
@@ -23,7 +25,7 @@ export class HoagieMapper {
       name: hoagie.name,
       ingredients: hoagie.ingredients,
       picture: hoagie.picture,
-      creatorId: hoagie.creatorId.toValue(),
+      creatorId: new Types.ObjectId(hoagie.creatorId.toValue()),
     }
   }
 }

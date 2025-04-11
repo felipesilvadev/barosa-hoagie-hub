@@ -27,7 +27,9 @@ export class FetchHoagiesController {
     })
 
     return {
-      hoagies: hoagies.map((hoagie) => HoagiePresenter.toHTTP(hoagie)),
+      hoagies: hoagies.map(({ item, commentCount }) =>
+        HoagiePresenter.toHTTP(item, { commentCount }),
+      ),
       total,
       perPage,
     }
