@@ -30,6 +30,7 @@ import { CommentOnHoagieUseCase } from 'src/domain/use-cases/comment-on-hoagie'
           limit: 10,
         },
       ],
+      errorMessage: 'Too Many Requests',
     }),
     DatabaseModule,
     CryptographyModule,

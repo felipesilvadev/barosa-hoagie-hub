@@ -1,24 +1,25 @@
 import { createContext, useState, useEffect, PropsWithChildren } from 'react';
 
+import { authApi, AuthenticateData } from '~/infra/services/auth-service';
 import { getToken, removeToken, setToken } from '~/store/token';
 
 type AuthContextType = {
-  signIn: (token: string) => Promise<void>;
+  signIn: (data: AuthenticateData) => Promise<void>;
   signOut: () => Promise<void>;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  isCheckingToken: boolean;
 };
 
 export const AuthContext = createContext<AuthContextType>({
   signIn: async () => {},
   signOut: async () => {},
   isAuthenticated: false,
-  isLoading: true,
+  isCheckingToken: true,
 });
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isCheckingToken, setIsCheckingToken] = useState(true);
 
   useEffect(() => {
     checkToken();
@@ -27,12 +28,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const checkToken = async () => {
     const token = await getToken();
     setIsAuthenticated(!!token);
-    setIsLoading(false);
+    setIsCheckingToken(false);
   };
 
-  const signIn = async (token: string) => {
-    await setToken(token);
-    setIsAuthenticated(true);
+  const signIn = async ({ email, password }: AuthenticateData) => {
+    try {
+      const { data } = await authApi.authenticate({ email, password });
+      await setToken(data.access_token);
+      setIsAuthenticated(true);
+    } catch (error) {
+      throw error;
+    }
   };
 
   const signOut = async () => {
@@ -41,7 +47,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   };
 
   return (
-    <AuthContext.Provider value={{ signIn, signOut, isAuthenticated, isLoading }}>
+    <AuthContext.Provider value={{ signIn, signOut, isAuthenticated, isCheckingToken }}>
       {children}
     </AuthContext.Provider>
   );

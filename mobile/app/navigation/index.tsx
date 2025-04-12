@@ -5,9 +5,9 @@ import { AuthNavigator } from './auth-navigator';
 import { useAuth } from '../hooks/use-auth';
 
 export function Routes() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isCheckingToken } = useAuth();
 
-  if (isLoading) return null;
+  if (isCheckingToken) return null;
 
   return (
     <NavigationContainer>
