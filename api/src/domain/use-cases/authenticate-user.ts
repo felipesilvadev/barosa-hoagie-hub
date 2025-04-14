@@ -10,6 +10,7 @@ interface AuthenticateUserUseCaseRequest {
 
 type AuthenticateUserUseCaseResponse = {
   accessToken: string
+  user: { id: string }
 }
 
 @Injectable()
@@ -39,12 +40,14 @@ export class AuthenticateUserUseCase {
       throw new UnauthorizedException('Credentials are not valid')
     }
 
+    const userId = user.id.toString()
     const accessToken = await this.encrypter.encrypt({
-      sub: user.id.toString(),
+      sub: userId,
     })
 
     return {
       accessToken,
+      user: { id: userId },
     }
   }
 }

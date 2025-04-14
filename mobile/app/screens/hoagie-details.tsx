@@ -16,6 +16,7 @@ import {
 
 import { Input } from '~/components/input';
 import { ScreenHeader } from '~/components/screen-header';
+import { useAuth } from '~/hooks/use-auth';
 import { Hoagie, hoagieApi } from '~/infra/services/hoagie-service';
 
 export type HoagieDetailsParams = {
@@ -23,6 +24,8 @@ export type HoagieDetailsParams = {
 };
 
 export function HoagieDetails() {
+  const { user } = useAuth();
+
   const { params } = useRoute();
   const { hoagie_id } = params as HoagieDetailsParams;
 
@@ -102,7 +105,9 @@ export function HoagieDetails() {
 
           <View className="px-4 pt-4">
             <Text className="font-poppins-medium text-xl text-zinc-800 ">{name}</Text>
-            <Text className="font-poppins text-sm text-zinc-500">By {creator.name}</Text>
+            <Text className="font-poppins text-sm text-zinc-500">
+              By {creator.id === user.id ? 'you' : creator.name}
+            </Text>
             <Text className="font-poppins mt-3 text-sm text-zinc-500">
               Ingredients: {ingredients.join(', ')}
             </Text>
@@ -119,7 +124,7 @@ export function HoagieDetails() {
               renderItem={({ item }) => (
                 <View className="bg-zinc-200 px-4 py-3">
                   <Text className="font-poppins-medium text-xs font-semibold text-zinc-600">
-                    {item.user.name}{' '}
+                    {item.user.id === user.id ? 'You' : item.user.name}{' '}
                     <Text className="font-poppins text-zinc-400">
                       {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
                     </Text>

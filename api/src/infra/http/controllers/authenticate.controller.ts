@@ -29,10 +29,11 @@ export class AuthenticateController {
       password,
     })
 
-    const { accessToken } = result
+    const { accessToken, user } = result
 
     return {
       access_token: accessToken,
+      user,
     }
   }
 }

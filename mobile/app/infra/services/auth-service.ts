@@ -7,6 +7,9 @@ export type AuthenticateData = {
 
 type AuthenticateResponse = {
   access_token: string;
+  user: {
+    id: string;
+  };
 };
 
 export type RegisterData = {
