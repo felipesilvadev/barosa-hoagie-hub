@@ -1,7 +1,7 @@
 import { Link, useNavigation } from '@react-navigation/native';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 
 import { Button } from '~/components/button';
 import { Input } from '~/components/input';
@@ -65,49 +65,58 @@ const SignUp = () => {
   };
 
   return (
-    <View className="flex-1 justify-center gap-8 px-6">
-      <View>
-        <Text className="font-poppins-medium text-3xl">Sign Up</Text>
-        <Text className="font-poppins text-zinc-400">How good to have you here!</Text>
-      </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1">
+      <View className="flex-1 justify-center gap-8 px-6">
+        <View>
+          <Text className="font-poppins-medium text-3xl">Sign Up</Text>
+          <Text className="font-poppins text-zinc-400">How good to have you here!</Text>
+        </View>
 
-      <View className="gap-3">
-        <Input
-          label="Name"
-          placeholder="John Doe"
-          value={name}
-          onChangeText={setName}
-          autoCapitalize="words"
-        />
-        <Input
-          label="E-mail"
-          placeholder="email@example.com"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="email-address"
-        />
-        <Input
-          isPassword
-          label="Password"
-          placeholder="*******"
-          value={password}
-          onChangeText={setPassword}
-        />
+        <View className="gap-3">
+          <Input
+            label="Name"
+            placeholder="John Doe"
+            value={name}
+            onChangeText={setName}
+            autoCapitalize="words"
+          />
+          <Input
+            label="E-mail"
+            placeholder="email@example.com"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address"
+          />
+          <Input
+            isPassword
+            label="Password"
+            placeholder="*******"
+            value={password}
+            onChangeText={setPassword}
+          />
 
-        <Button label="Sign Up" iconName="UserPlus" onPress={handleSignUp} isLoading={isPending} />
-      </View>
+          <Button
+            label="Sign Up"
+            iconName="UserPlus"
+            onPress={handleSignUp}
+            isLoading={isPending}
+          />
+        </View>
 
-      <View className="items-center">
-        <Text>
-          Do you already have an account?{' '}
-          <Link screen="SignIn">
-            <Text className="font-poppins-medium text-zinc-900">Sign In</Text>
-          </Link>
-        </Text>
+        <View className="items-center">
+          <Text>
+            Do you already have an account?{' '}
+            <Link screen="SignIn">
+              <Text className="font-poppins-medium text-zinc-900">Sign In</Text>
+            </Link>
+          </Text>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

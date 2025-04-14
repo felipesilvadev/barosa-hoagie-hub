@@ -1,6 +1,6 @@
 import { Link, useRoute } from '@react-navigation/native';
 import { useReducer, useState } from 'react';
-import { Text, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, Text, View } from 'react-native';
 
 import { Button } from '~/components/button';
 import { Input } from '~/components/input';
@@ -56,42 +56,46 @@ const SignIn = () => {
   };
 
   return (
-    <View className="flex-1 justify-center gap-8 px-6">
-      <View>
-        <Text className="font-poppins-medium text-3xl">Sign In</Text>
-        <Text className="font-poppins text-zinc-400">Welcome back!</Text>
-      </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      className="flex-1">
+      <View className="flex-1 justify-center gap-8 px-6">
+        <View>
+          <Text className="font-poppins-medium text-3xl">Sign In</Text>
+          <Text className="font-poppins text-zinc-400">Welcome back!</Text>
+        </View>
 
-      <View className="gap-3">
-        <Input
-          label="E-mail"
-          placeholder="email@email.com"
-          value={email}
-          onChangeText={setEmail}
-          autoCapitalize="none"
-          autoCorrect={false}
-          keyboardType="email-address"
-        />
-        <Input
-          isPassword
-          label="Password"
-          placeholder="*******"
-          value={password}
-          onChangeText={setPassword}
-        />
+        <View className="gap-3">
+          <Input
+            label="E-mail"
+            placeholder="email@email.com"
+            value={email}
+            onChangeText={setEmail}
+            autoCapitalize="none"
+            autoCorrect={false}
+            keyboardType="email-address"
+          />
+          <Input
+            isPassword
+            label="Password"
+            placeholder="*******"
+            value={password}
+            onChangeText={setPassword}
+          />
 
-        <Button label="Sign In" iconName="LogIn" onPress={handleSignIn} isLoading={isLoading} />
-      </View>
+          <Button label="Sign In" iconName="LogIn" onPress={handleSignIn} isLoading={isLoading} />
+        </View>
 
-      <View className="items-center">
-        <Text>
-          Don't have an account?{' '}
-          <Link screen="SignUp">
-            <Text className="font-poppins-medium text-zinc-900">Sign Up</Text>
-          </Link>
-        </Text>
+        <View className="items-center">
+          <Text>
+            Don't have an account?{' '}
+            <Link screen="SignUp">
+              <Text className="font-poppins-medium text-zinc-900">Sign Up</Text>
+            </Link>
+          </Text>
+        </View>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

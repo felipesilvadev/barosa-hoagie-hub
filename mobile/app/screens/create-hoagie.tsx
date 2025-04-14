@@ -165,6 +165,7 @@ export function CreateHoagie() {
             <View>
               <View className="mb-4 flex-row items-end gap-2">
                 <Input
+                  isHorizontally
                   label="Ingredients"
                   value={ingredientInput}
                   onChangeText={setIngredientInput}

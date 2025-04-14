@@ -7,15 +7,16 @@ import Icon from './icon';
 interface InputProps extends TextInputProps {
   label?: string;
   isPassword?: boolean;
+  isHorizontally?: boolean;
 }
 
-const Input = ({ label, isPassword = false, ...rest }: InputProps) => {
+const Input = ({ label, isPassword = false, isHorizontally = false, ...rest }: InputProps) => {
   const [showPassword, toggleShowPassword] = useReducer((state) => !state, isPassword);
 
   const handleChangePasswordVisibility = () => toggleShowPassword();
 
   return (
-    <View className="flex-1">
+    <View style={isHorizontally ? { flex: 1 } : undefined}>
       {label && <Text className="font-poppins mb-1 text-sm">{label}</Text>}
 
       <View className="h-12 flex-row items-center rounded bg-zinc-200 px-3 py-3">

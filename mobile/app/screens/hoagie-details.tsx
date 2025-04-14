@@ -139,7 +139,12 @@ export function HoagieDetails() {
             />
 
             <View className="mt-4 flex-row items-center gap-2 px-4">
-              <Input value={comment} onChangeText={setComment} placeholder="Write a comment..." />
+              <Input
+                isHorizontally
+                value={comment}
+                onChangeText={setComment}
+                placeholder="Write a comment..."
+              />
 
               <TouchableOpacity
                 onPress={handleSendComment}
