@@ -47,11 +47,12 @@ const Home = () => {
           showsVerticalScrollIndicator={false}
           initialNumToRender={7}
           refreshControl={<RefreshControl refreshing={isRefetching} onRefresh={refetch} />}
-          contentContainerStyle={{ paddingHorizontal: 8, paddingTop: 20, paddingBottom: 48 }}
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: 48 }}
           ListEmptyComponent={<HoagieListEmpty />}
+          ItemSeparatorComponent={() => <View className="h-px bg-zinc-100" />}
           ListHeaderComponent={
             hoagies.length ? (
-              <View className="mb-2 items-end">
+              <View className="mb-2 items-end pr-2">
                 <Text className="font-poppins text-[10px] text-zinc-400">
                   {total} hoagie(s) found
                 </Text>

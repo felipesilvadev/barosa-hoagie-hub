@@ -12,10 +12,7 @@ type Props = TouchableOpacityProps & {
 
 export function HoagieCard({ hoagie, ...rest }: Props) {
   return (
-    <TouchableOpacity
-      className="mb-4 w-full rounded-2xl bg-white p-4 shadow-sm"
-      activeOpacity={0.8}
-      {...rest}>
+    <TouchableOpacity className="w-full bg-white p-4" activeOpacity={0.8} {...rest}>
       <Text className="font-poppins-medium text-base text-zinc-900 ">{hoagie.name}</Text>
 
       <Text className="font-poppins text-sm text-zinc-500 ">
