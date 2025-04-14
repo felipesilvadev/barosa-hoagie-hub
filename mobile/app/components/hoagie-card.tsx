@@ -10,7 +10,7 @@ type Props = TouchableOpacityProps & {
   hoagie: Hoagie;
 };
 
-export default function HoagieCard({ hoagie, ...rest }: Props) {
+export function HoagieCard({ hoagie, ...rest }: Props) {
   return (
     <TouchableOpacity
       className="mb-4 w-full rounded-2xl bg-white p-4 shadow-sm"

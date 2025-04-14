@@ -1,9 +1,10 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
 
-import { Header } from '~/components/header';
-import HoagieCard from '~/components/hoagie-card';
+import { HoagieAddButton } from '~/components/hoagie-add-button';
+import { HoagieCard } from '~/components/hoagie-card';
 import { HoagieListEmpty } from '~/components/hoagie-list-empty';
+import { HomeHeader } from '~/components/home-header';
 import { HoagieListLoader } from '~/components/skeletons/hoagie-list-loader';
 import { hoagieApi } from '~/infra/services/hoagie-service';
 
@@ -30,7 +31,7 @@ const Home = () => {
 
   return (
     <View className="flex-1">
-      <Header />
+      <HomeHeader />
 
       {isLoading ? (
         <View className="px-2 pt-5">
@@ -66,6 +67,8 @@ const Home = () => {
           }
         />
       )}
+
+      <HoagieAddButton />
     </View>
   );
 };

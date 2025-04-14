@@ -35,9 +35,13 @@ type FetchPaginatedHoagiesResponse = {
   perPage: number;
 };
 
+export type CreateHoagieData = Pick<Hoagie, 'name' | 'ingredients' | 'picture'>;
+
 export const hoagieApi = {
   fetchPaginatedHoagies: (page: number) =>
     api
       .get<FetchPaginatedHoagiesResponse>(`/hoagies?page=${page}`)
       .then((response) => response.data),
+  createHoagie: ({ name, ingredients, picture }: CreateHoagieData) =>
+    api.post('/hoagies', { name, ingredients, picture }),
 };

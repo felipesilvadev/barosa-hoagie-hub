@@ -5,7 +5,7 @@ import Icon from './icon';
 
 import { useAuth } from '~/hooks/use-auth';
 
-const Header = () => {
+const HomeHeader = () => {
   const { signOut } = useAuth();
 
   return (
@@ -23,4 +23,4 @@ const Header = () => {
   );
 };
 
-export { Header };
+export { HomeHeader };
