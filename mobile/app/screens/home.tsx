@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { FlatList, RefreshControl, Text, View } from 'react-native';
 
@@ -9,6 +10,8 @@ import { HoagieListLoader } from '~/components/skeletons/hoagie-list-loader';
 import { hoagieApi } from '~/infra/services/hoagie-service';
 
 const Home = () => {
+  const { navigate } = useNavigation();
+
   const { data, isLoading, isFetchingNextPage, fetchNextPage, hasNextPage, refetch, isRefetching } =
     useInfiniteQuery({
       queryKey: ['hoagies'],
@@ -41,7 +44,12 @@ const Home = () => {
         <FlatList
           data={hoagies}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <HoagieCard hoagie={item} />}
+          renderItem={({ item }) => (
+            <HoagieCard
+              hoagie={item}
+              onPress={() => navigate('HoagieDetails', { hoagie_id: item.id })}
+            />
+          )}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.4}
           showsVerticalScrollIndicator={false}
