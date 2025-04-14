@@ -1,5 +1,6 @@
 import { useRoute } from '@react-navigation/native';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { formatDistanceToNow } from 'date-fns';
 import { useState } from 'react';
 import {
   View,
@@ -15,7 +16,7 @@ import {
 
 import { Input } from '~/components/input';
 import { ScreenHeader } from '~/components/screen-header';
-import { hoagieApi } from '~/infra/services/hoagie-service';
+import { Hoagie, hoagieApi } from '~/infra/services/hoagie-service';
 
 export type HoagieDetailsParams = {
   hoagie_id: string;
@@ -25,6 +26,8 @@ export function HoagieDetails() {
   const { params } = useRoute();
   const { hoagie_id } = params as HoagieDetailsParams;
 
+  const queryClient = useQueryClient();
+
   const [comment, setComment] = useState('');
 
   const { data: hoagieData } = useQuery({
@@ -32,15 +35,51 @@ export function HoagieDetails() {
     queryFn: () => hoagieApi.getHoagieDetails(hoagie_id),
   });
 
+  const { mutateAsync: addComment } = useMutation({
+    mutationFn: (text: string) => hoagieApi.addComment({ hoagie_id, text }),
+    onMutate: async (newCommentText) => {
+      await queryClient.cancelQueries({ queryKey: ['hoagie', hoagie_id] });
+
+      const previous = queryClient.getQueryData(['hoagie', hoagie_id]);
+
+      queryClient.setQueryData(['hoagie', hoagie_id], (old: Hoagie) => {
+        return {
+          ...old,
+          comments: [
+            {
+              id: `optimistic-${Date.now()}`,
+              text: newCommentText,
+              createdAt: new Date().toISOString(),
+              user: { id: 'me', name: 'You' },
+              optimistic: true,
+            },
+            ...(old.comments ?? []),
+          ],
+        };
+      });
+
+      return { previous };
+    },
+    onError: (_err, _newComment, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(['hoagie', hoagie_id], context.previous);
+      }
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['hoagie', hoagie_id] });
+    },
+  });
+
   const handleSendComment = () => {
     if (comment.trim()) {
+      addComment(comment.trim());
       setComment('');
     }
   };
 
   if (!hoagieData) return null;
 
-  const { picture, name, ingredients, creator, comments } = hoagieData?.hoagie;
+  const { picture, name, ingredients, creator, comments } = hoagieData;
 
   return (
     <KeyboardAvoidingView
@@ -79,8 +118,11 @@ export function HoagieDetails() {
               keyExtractor={(item) => item.id}
               renderItem={({ item }) => (
                 <View className="bg-zinc-200 px-4 py-3">
-                  <Text className="font-poppins text-xs font-semibold text-zinc-600">
-                    {item.user.name}
+                  <Text className="font-poppins-medium text-xs font-semibold text-zinc-600">
+                    {item.user.name}{' '}
+                    <Text className="font-poppins text-zinc-400">
+                      {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+                    </Text>
                   </Text>
                   <Text className="font-poppins text-sm text-zinc-700 ">{item.text}</Text>
                 </View>

@@ -18,7 +18,7 @@ const Input = ({ label, isPassword = false, ...rest }: InputProps) => {
     <View className="flex-1">
       {label && <Text className="font-poppins mb-1 text-sm">{label}</Text>}
 
-      <View className="h-12 flex-row items-center rounded bg-zinc-200 px-3 py-4">
+      <View className="h-12 flex-row items-center rounded bg-zinc-200 px-3 py-3">
         <TextInput secureTextEntry={showPassword} className="flex-1 pr-2" {...rest} />
 
         {isPassword && (

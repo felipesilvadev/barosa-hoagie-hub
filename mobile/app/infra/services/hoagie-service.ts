@@ -41,6 +41,11 @@ type GetHoagieDetailsResponse = {
   hoagie: Hoagie;
 };
 
+type AddCommentData = {
+  hoagie_id: string;
+  text: string;
+};
+
 export const hoagieApi = {
   fetchPaginatedHoagies: (page: number) =>
     api
@@ -49,5 +54,7 @@ export const hoagieApi = {
   createHoagie: ({ name, ingredients, picture }: CreateHoagieData) =>
     api.post('/hoagies', { name, ingredients, picture }),
   getHoagieDetails: (id: string) =>
-    api.get<GetHoagieDetailsResponse>(`/hoagies/${id}`).then((response) => response.data),
+    api.get<GetHoagieDetailsResponse>(`/hoagies/${id}`).then((response) => response.data.hoagie),
+  addComment: ({ hoagie_id, text }: AddCommentData) =>
+    api.post(`/hoagies/comments/${hoagie_id}`, { text }),
 };
