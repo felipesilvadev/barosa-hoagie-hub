@@ -16,6 +16,7 @@ import {
 
 import { Input } from '~/components/input';
 import { ScreenHeader } from '~/components/screen-header';
+import { HoagieDetailsSkeleton } from '~/components/skeletons/hoagie-details-skeleton';
 import { useAuth } from '~/hooks/use-auth';
 import { Hoagie, hoagieApi } from '~/infra/services/hoagie-service';
 
@@ -33,7 +34,7 @@ export function HoagieDetails() {
 
   const [comment, setComment] = useState('');
 
-  const { data: hoagieData } = useQuery({
+  const { data: hoagieData, isFetching } = useQuery({
     queryKey: ['hoagie', hoagie_id],
     queryFn: () => hoagieApi.getHoagieDetails(hoagie_id),
   });
@@ -91,69 +92,73 @@ export function HoagieDetails() {
       <SafeAreaView className="flex-1">
         <ScreenHeader title="Hoagie details" />
 
-        <ScrollView
-          className="flex-1"
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}>
-          {picture ? (
-            <Image source={{ uri: picture }} className="h-64 w-full object-cover" />
-          ) : (
-            <View className="h-64 w-full items-center justify-center bg-zinc-200">
-              <Text className="font-poppins text-zinc-500">No image available</Text>
+        {isFetching ? (
+          <HoagieDetailsSkeleton />
+        ) : (
+          <ScrollView
+            className="flex-1"
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}>
+            {picture ? (
+              <Image source={{ uri: picture }} className="h-64 w-full object-cover" />
+            ) : (
+              <View className="h-64 w-full items-center justify-center bg-zinc-200">
+                <Text className="font-poppins text-zinc-500">No image available</Text>
+              </View>
+            )}
+
+            <View className="px-4 pt-4">
+              <Text className="font-poppins-medium text-xl text-zinc-800 ">{name}</Text>
+              <Text className="font-poppins text-sm text-zinc-500">
+                By {creator.id === user.id ? 'you' : creator.name}
+              </Text>
+              <Text className="mt-3 font-poppins text-sm text-zinc-500">
+                Ingredients: {ingredients.join(', ')}
+              </Text>
             </View>
-          )}
 
-          <View className="px-4 pt-4">
-            <Text className="font-poppins-medium text-xl text-zinc-800 ">{name}</Text>
-            <Text className="font-poppins text-sm text-zinc-500">
-              By {creator.id === user.id ? 'you' : creator.name}
-            </Text>
-            <Text className="font-poppins mt-3 text-sm text-zinc-500">
-              Ingredients: {ingredients.join(', ')}
-            </Text>
-          </View>
+            <View className="mt-6 pb-10">
+              <Text className="mb-2 pl-4 font-poppins-medium text-zinc-800">
+                Comments ({comments?.length})
+              </Text>
 
-          <View className="mt-6 pb-10">
-            <Text className="font-poppins-medium mb-2 pl-4 text-zinc-800">
-              Comments ({comments?.length})
-            </Text>
-
-            <FlatList
-              data={comments}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item }) => (
-                <View className="bg-zinc-200 px-4 py-3">
-                  <Text className="font-poppins-medium text-xs font-semibold text-zinc-600">
-                    {item.user.id === user.id ? 'You' : item.user.name}{' '}
-                    <Text className="font-poppins text-zinc-400">
-                      {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+              <FlatList
+                data={comments}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                  <View className="bg-zinc-200 px-4 py-3">
+                    <Text className="font-poppins-medium text-xs font-semibold text-zinc-600">
+                      {item.user.id === user.id ? 'You' : item.user.name}{' '}
+                      <Text className="font-poppins text-zinc-400">
+                        {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true })}
+                      </Text>
                     </Text>
-                  </Text>
-                  <Text className="font-poppins text-sm text-zinc-700 ">{item.text}</Text>
-                </View>
-              )}
-              scrollEnabled={false}
-              ListEmptyComponent={
-                <Text className="font-poppins pl-4 text-sm text-zinc-400">No comments yet.</Text>
-              }
-            />
-
-            <View className="mt-4 flex-row items-center gap-2 px-4">
-              <Input
-                isHorizontally
-                value={comment}
-                onChangeText={setComment}
-                placeholder="Write a comment..."
+                    <Text className="font-poppins text-sm text-zinc-700 ">{item.text}</Text>
+                  </View>
+                )}
+                scrollEnabled={false}
+                ListEmptyComponent={
+                  <Text className="pl-4 font-poppins text-sm text-zinc-400">No comments yet.</Text>
+                }
               />
 
-              <TouchableOpacity
-                onPress={handleSendComment}
-                className="bg-primary h-12 items-center justify-center rounded px-3 py-2">
-                <Text className="font-poppins">Send</Text>
-              </TouchableOpacity>
+              <View className="mt-4 flex-row items-center gap-2 px-4">
+                <Input
+                  isHorizontally
+                  value={comment}
+                  onChangeText={setComment}
+                  placeholder="Write a comment..."
+                />
+
+                <TouchableOpacity
+                  onPress={handleSendComment}
+                  className="h-12 items-center justify-center rounded bg-primary px-3 py-2">
+                  <Text className="font-poppins">Send</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        )}
       </SafeAreaView>
     </KeyboardAvoidingView>
   );
